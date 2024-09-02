@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QueriX</title>
+    <link rel="stylesheet" type="text/css" href="/static/style1.css">
+</head>
+<body>
+    <h1>QueriX</h1>
+    
+    <form id="queryForm">
+        <label for="textInput"><b>Enter your Query in English:</b></label><br>
+        <textarea id="textInput" name="textInput" rows="4" cols="50"></textarea><br>
+        <center><input type="submit" value="Generate"></center>     
+    </form>
+    
+    <div>
+        <a href="/logout" class="btn btn-primary">Logout</a>
+    </div>
+
+    
+    <div id="result" style="display: none;">
+        <h2>Generated SQL Query:</h2>
+        <pre id="sqlQuery"></pre>
+        <h2>Expected Output:</h2>
+        <pre id="expectedOutput"></pre>
+        <h2>Explanation:</h2>
+        <pre id="explanation"></pre>
+    </div>
+    
+
+    <script>
+        document.getElementById('queryForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const textInput = formData.get('textInput');
+            const response = await fetch('/generate_sql_query', {
+                method: 'POST',
+                body: new URLSearchParams({ text_input: textInput }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            });
+            const data = await response.json();
+            document.getElementById('sqlQuery').innerText = data.sql_query;
+            document.getElementById('expectedOutput').innerText = data.expected_output;
+            document.getElementById('explanation').innerText = data.explanation;
+            document.getElementById('result').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
